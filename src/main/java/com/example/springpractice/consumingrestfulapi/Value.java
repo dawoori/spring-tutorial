@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.springpractice.consumingrestfulapi;
 
 import lombok.Getter;
 import lombok.Setter;

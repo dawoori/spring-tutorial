@@ -3,6 +3,8 @@ package com.example.springpractice;
 import com.example.springpractice.accessingdatajpa.Customer;
 import com.example.springpractice.accessingdatajpa.CustomerRepository;
 import com.example.springpractice.consumingrestfulapi.Quote;
+import com.example.springpractice.crudwithvaadin.Student;
+import com.example.springpractice.crudwithvaadin.StudentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -16,12 +18,46 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
-@RestController
 public class MyApplication {
 	private static final Logger log = LoggerFactory.getLogger(MyApplication.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(MyApplication.class, args);
+	}
+	@Bean
+	public CommandLineRunner loadData(StudentRepository repository) {
+		return (args) -> {
+			// save a couple of students
+			repository.save(new Student("Jack", "Bauer"));
+			repository.save(new Student("Chloe", "O'Brian"));
+			repository.save(new Student("Kim", "Bauer"));
+			repository.save(new Student("David", "Palmer"));
+			repository.save(new Student("Michelle", "Dessler"));
+
+			// fetch all customers
+			log.info("Customers found with findAll():");
+			log.info("-------------------------------");
+			for (Student student : repository.findAll()) {
+				log.info(student.toString());
+			}
+			log.info("");
+
+			// fetch an individual student by ID
+			Student student = repository.findById(1L).get();
+			log.info("Student found with findOne(1L):");
+			log.info("--------------------------------");
+			log.info(student.toString());
+			log.info("");
+
+			// fetch students by last name
+			log.info("Student found with findByLastNameStartsWithIgnoreCase('Bauer'):");
+			log.info("--------------------------------------------");
+			for (Student bauer : repository
+					.findByLastNameStartsWithIgnoreCase("Bauer")) {
+				log.info(bauer.toString());
+			}
+			log.info("");
+		};
 	}
 
 	@Bean
@@ -67,11 +103,6 @@ public class MyApplication {
 					Quote.class);
 			log.info(quote.toString());
 		};
-	}
-
-	@GetMapping("/hello")
-	public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
-		return String.format("Hello %s!", name);
 	}
 }
             
